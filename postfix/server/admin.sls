@@ -27,4 +27,18 @@ postfixadmin_config:
   - require:
     - pkg: postfixadmin_packages
 
+postfixadmin_apache_conf:
+  file.managed:
+  - name: /etc/apache2/conf-available/postfixadmin.conf
+  - source: salt://postfix/files/admin/apache.conf
+  - template: jinja
+
+postfixadmin_enable:
+  cmd.run:
+    - name: a2enconf postfixadmin
+    - creates: /etc/apache2/conf-enabled/postfixadmin
+    - require:
+      - file: mailman_apache_conf
+
+
 {%- endif %}
