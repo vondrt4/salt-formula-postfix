@@ -38,7 +38,7 @@ postfixadmin_enable:
     - name: a2enconf postfixadmin
     - creates: /etc/apache2/conf-enabled/postfixadmin
     - require:
-      - file: mailman_apache_conf
+      - file: postfixadmin_apache_conf
 
 
 {%- endif %}
