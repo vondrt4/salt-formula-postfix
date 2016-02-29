@@ -24,6 +24,7 @@ mailman   unix  -       n       n       -       -       pipe
 submission inet n       -       -       -       -       smtpd
       -o smtpd_tls_wrappermode=no
       -o smtpd_tls_security_level=encrypt
+      -o tls_preempt_cipherlist=yes
 {%- if server.ssl is defined and server.ssl.enabled %}
 smtps     inet  n       -       -       -       -       smtpd
       -o smtpd_tls_wrappermode=yes
