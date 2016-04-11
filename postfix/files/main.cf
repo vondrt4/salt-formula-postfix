@@ -12,6 +12,8 @@ append_dot_mydomain = no
 
 readme_directory = no
 
+mynetworks = {% for subnet in server.mynetworks %}{{ subnet }} {% endfor %}
+
 {%- if server.enabled %}
 {%- include "postfix/files/_virtual.cf" %}
 {%- endif %}
