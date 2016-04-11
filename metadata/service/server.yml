@@ -6,6 +6,10 @@ parameters:
       enabled: true
       myhostname: ${linux:system:name}.${linux:system:domain}
       myorigin: ${linux:system:name}.${linux:system:domain}
+      mynetworks:
+        - 127.0.0.0/8
+        - '[::1]/128'
+        - '[fe80::]/64'
       mailbox_base: /srv/mail
       dovecot_lmtp:
         enabled: true
