@@ -6,11 +6,29 @@ mailman_packages:
   pkg.installed:
     - name: mailman
 
-mailman_service:
-  service.running:
-    - name: mailman
+mailman_aliases:
+  file.managed:
+    - name: /var/lib/mailman/data/aliases
+    - group: list
     - require:
       - pkg: mailman_packages
+    - require_in:
+      - cmd: postfix_newaliases
+
+mailman_service:
+{%- if not grains.get('noservices', False) %}
+  service.running:
+    - name: mailman
+    - enable: true
+    - require:
+      - pkg: mailman_packages
+{%- else %}
+  service.dead:
+    - name: mailman
+    - enable: false
+    - require:
+      - pkg: mailman_packages
+{%- endif %}
 
 # This should be imho setup this way by mailman package itself in the
 # same manner as roundcube

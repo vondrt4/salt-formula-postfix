@@ -3,6 +3,16 @@
 {%- if server.ssl.enabled or server.ssl.letsencrypt %}
 
 # SMTP server SSL
+
+{%- if server.ssl.enabled %}
+{%- if server.ssl.key_file is defined %}
+smtpd_tls_cert_file={{ server.ssl.cert_file }}
+smtpd_tls_key_file={{ server.ssl.key_file }}
+{%- else %}
+smtpd_tls_cert_file=/etc/postfix/ssl/{{ server.origin }}.crt
+smtpd_tls_key_file=/etc/postfix/ssl/{{ server.origin }}.key
+{%- endif %}
+{%- endif %}
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
 smtpd_tls_security_level = {%- if server.ssl.require is defined and server.ssl.require %}encrypt{%- else %}may{%- endif %}
 smtp_tls_security_level = may
@@ -20,14 +30,19 @@ smtp_tls_loglevel = 1
 tls_ssl_options = NO_COMPRESSION
 
 # SMTP client certificate
-{%- endif %}
-
 {%- if server.ssl.enabled %}
-smtpd_tls_cert_file=/etc/postfix/ssl/{{ server.origin }}.crt
-smtpd_tls_key_file=/etc/postfix/ssl/{{ server.origin }}.key
+{%- if server.ssl.key_file is defined %}
+smtp_tls_cert_file={{ server.ssl.cert_file }}
+smtp_tls_key_file={{ server.ssl.key_file }}
+{%- else %}
+smtp_tls_cert_file=/etc/postfix/ssl/{{ server.origin }}.crt
+smtp_tls_key_file=/etc/postfix/ssl/{{ server.origin }}.key
+{%- endif %}
 {%- endif %}
 
 {%- if server.ssl.letsencrypt %}
 smtpd_tls_cert_file=/etc/letsencrypt/live/{{ server.name }}/fullchain.pem
 smtpd_tls_key_file=/etc/letsencrypt/live/{{ server.name }}/privkey.pem
+smtp_tls_cert_file=/etc/letsencrypt/live/{{ server.name }}/fullchain.pem
+smtp_tls_key_file=/etc/letsencrypt/live/{{ server.name }}/privkey.pem
 {%- endif %}

@@ -7,10 +7,33 @@ postfix_packages:
       service: postfix_service
 
 postfix_service:
+{%- if not grains.get('noservices', False) %}
   service.running:
     - name: {{ server.service }}
+    - enable: true
     - require:
       - file: postfix_main_config
+{%- else %}
+  service.dead:
+    - name: {{ server.service }}
+    - enable: false
+    - require:
+      - file: postfix_main_config
+{%- endif %}
+
+{%- for chroot_file in server.chroot_files %}
+
+/var/spool/postfix/{{ chroot_file }}:
+  file.copy:
+    - source: {{ chroot_file }}
+    - preserve: true
+    - makedirs: true
+    - watch_in:
+      - service: postfix_service
+    - require:
+      - pkg: postfix_packages
+
+{%- endfor %}
 
 postfix_main_config:
   file.managed:
@@ -57,6 +80,7 @@ postfix_newaliases:
 
 {%- if server.get('ssl', {}).get('enabled', False) %}
 
+{%- if server.ssl.key is defined %}
 /etc/postfix/ssl:
   file.directory:
   - user: root
@@ -87,5 +111,6 @@ postfix_newaliases:
     - file: /etc/postfix/ssl
   - watch_in:
     - service: postfix_service
+{%- endif %}
 
 {%- endif %}

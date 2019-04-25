@@ -1,0 +1,11 @@
+{%- from "postfix/map.jinja" import server with context -%}
+{%- if server.enabled %}
+backup:
+  postfix:
+    fs_includes:
+    - {{ server.mailbox_base }}
+    {%- if server.mailman.enabled %}
+    - /var/lib/mailman
+    {%- endif %}
+    fs_excludes: []
+{%- endif %}
